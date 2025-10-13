@@ -1,0 +1,12 @@
+# Core FastAPI and Server
+fastapi
+uvicorn[standard]
+pydantic
+python-multipart
+
+# NLP Engine
+spacy
+
+# File Parsing (from Member 2's robust toolset)
+PyMuPDF
+python-docx
