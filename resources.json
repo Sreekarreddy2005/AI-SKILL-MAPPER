@@ -1,0 +1,19 @@
+{
+  "SQL": [
+    { "title": "SQL for Data Science - Coursera", "url": "https://www.coursera.org/learn/sql-for-data-science", "type": "Course" },
+    { "title": "Intro to SQL - Kaggle", "url": "https://www.kaggle.com/learn/intro-to-sql", "type": "Interactive Tutorial" }
+  ],
+  "Python": [
+    { "title": "Python for Everybody - Dr. Chuck", "url": "https://www.py4e.com/lessons", "type": "Course" }
+  ],
+  "React": [
+    { "title": "Official React Tutorial", "url": "https://react.dev/learn", "type": "Documentation" }
+  ],
+  "Data Visualization": [
+    { "title": "Data Visualization - FreeCodeCamp Course", "url": "https://www.freecodecamp.org/learn/data-visualization/", "type": "Course" },
+    { "title": "Tableau Public", "url": "https://public.tableau.com/en-us/s/", "type": "Tool" }
+  ],
+  "Machine Learning": [
+    { "title": "Machine Learning by Andrew Ng - Stanford", "url": "https://www.coursera.org/learn/machine-learning", "type": "Course" }
+  ]
+}
