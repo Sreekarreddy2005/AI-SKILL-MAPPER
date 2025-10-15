@@ -1,48 +1,42 @@
+import re
 import spacy
-from fastapi import FastAPI, UploadFile, File, HTTPException
-from pydantic import BaseModel, Field
-from typing import List, Optional
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from pydantic import BaseModel
+from typing import List, Set
+from fastapi.middleware.cors import CORSMiddleware
 
-# --- Import the Core Logic from Member 1 and Member 2 ---
+# --- Import Your Core & Intelligent Logic ---
 from parsers.job_parser import parse_job_description
-from parsers.resume_parser import process_resume_file as parse_resume_from_file
-# THIS IS THE NEW, CRUCIAL IMPORT for the fix
 from parsers.resume_parser import extract_skills as extract_skills_from_resume_text
+from parsers.resume_parser import extract_text_from_pdf, extract_text_from_docx
+from intelligence.scoring import calculate_weighted_score
+from intelligence.roadmap import generate_learning_roadmap
 
 app = FastAPI(
     title="AI Skill Mapper - Final Intelligent API",
-    description="A unified API to parse documents and intelligently analyze the match between a job and a resume.",
-    version="2.0.0",
+    description="The complete API that analyzes a job description against an uploaded resume file.",
+    version="4.0.0",
 )
 
-# --- NLP Model & Skill Normalization Engine ---
-nlp = spacy.load("en_core_web_sm")
+# --- Add CORS Middleware ---
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
+# --- NLP Model & Helper Functions ---
+nlp = spacy.load("en_core_web_sm")
 SKILL_NORMALIZATION_MAP = {
-    "react.js": "React", "reactjs": "React",
-    "node.js": "NodeJS", "node js": "NodeJS",
-    "aws": "Amazon Web Services",
-    "gcp": "Google Cloud Platform",
-    "sql": "SQL", "mssql": "SQL", "my sql": "MySQL",
-    "postgres": "PostgreSQL", "postgresql": "PostgreSQL",
-    "machine learning": "Machine Learning", "ml": "Machine Learning",
-    "deep learning": "Deep Learning", "dl": "Deep Learning",
-    "natural language processing": "NLP",
-    "spring boot": "Spring Boot",
-    "restful webservices": "REST API", "restful services": "REST API",
-    "j2ee": "Java EE",
-    "python scripting": "Python",
-    "analyzing data": "Data Analysis", "data analytics": "Data Analysis",
+    "react.js": "React", "reactjs": "React", "node.js": "NodeJS", "aws": "Amazon Web Services",
+    "gcp": "Google Cloud Platform", "data visualization": "Data Visualization",
+    "machine learning": "Machine Learning", "analyzing data": "Data Analysis",
 }
 
 def normalize_skills(skills_list: List[dict]) -> set:
-    """
-    Takes a list of skill dictionaries and returns a clean, standardized SET of skill names.
-    Using a set is highly efficient for the matching logic later.
-    """
-    if not skills_list:
-        return set()
-
+    if not skills_list: return set()
     standardized_skills = set()
     for skill_info in skills_list:
         original_skill = skill_info.get("skill_name", "").lower().strip()
@@ -50,65 +44,61 @@ def normalize_skills(skills_list: List[dict]) -> set:
         standardized_skills.add(standard_name)
     return standardized_skills
 
-# --- API Request and Response Models ---
-
-class JobRequest(BaseModel):
-    text: str = Field(..., example="We are looking for a Python developer...")
-
-class MatchRequest(BaseModel):
-    job_description_text: str
-    resume_file_content_as_text: str
-
-# --- Final API Endpoints ---
-
-@app.post("/analyze-job", tags=["1. Parsing Tools"])
-async def analyze_job_endpoint(request: JobRequest):
-    """Parses a job description and returns its structured data."""
-    return parse_job_description(request.text)
-
-@app.post("/parse-resume", tags=["1. Parsing Tools"])
-async def parse_resume_endpoint(file: UploadFile = File(...)):
-    """Parses a resume file and returns its structured data."""
-    contents = await file.read()
-    return parse_resume_from_file(file.filename, contents)
+def clean_text(input_text: str) -> str:
+    """Removes invalid control characters that cause JSON errors."""
+    return re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f]', '', input_text)
 
 
-# --- The Intelligent Matching Endpoint (NOW FIXED) ---
-
-@app.post("/analyze-match", tags=["2. Intelligent Analysis"])
-async def analyze_match_endpoint(request: MatchRequest):
+# --- THE FINAL, CORRECT ENDPOINT ---
+@app.post("/analyze-match-with-file", tags=["Intelligent Analysis"])
+async def analyze_match_with_file_endpoint(
+    job_description_text: str = Form(...),
+    resume_file: UploadFile = File(...)
+):
     """
-    Analyzes the match between a job description and a resume.
-    This is the core "smart" function of the project.
+    Analyzes a job description (text) against a resume (file upload)
+    and generates a complete analysis and learning plan.
     """
-    # Step 1: Parse the job description to get its skills
-    job_data = parse_job_description(request.job_description_text)
+    # Step 1: Read the uploaded resume file into memory
+    resume_contents = await resume_file.read()
+    filename = resume_file.filename.lower()
+    resume_text = ""
+
+    # Step 2: Extract text from the resume file based on its type
+    try:
+        if filename.endswith('.pdf'):
+            resume_text = extract_text_from_pdf(resume_contents)
+        elif filename.endswith('.docx'):
+            resume_text = extract_text_from_docx(resume_contents)
+        else:
+            raise HTTPException(status_code=400, detail="Unsupported file type. Please upload a .pdf or .docx file.")
+
+        if not resume_text.strip():
+            raise HTTPException(status_code=400, detail="Could not extract text from the resume file.")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing resume file: {e}")
+
+    # Step 3: Clean the inputs
+    job_text_cleaned = clean_text(job_description_text)
+    resume_text_cleaned = clean_text(resume_text)
+
+    # Step 4: Parse job and resume to get skills
+    job_data = parse_job_description(job_text_cleaned)
     job_skills_raw = job_data.get("required_skills", [])
+    resume_skills_raw = extract_skills_from_resume_text(resume_text_cleaned)
 
-    # Step 2: Use the CORRECT skill extractor for the resume text
-    # THIS IS THE FIX: We are now using the efficient PhraseMatcher from the
-    # resume parser directly on the raw text.
-    resume_skills_raw = extract_skills_from_resume_text(request.resume_file_content_as_text)
-
-    # Step 3: Normalize both sets of skills using the engine
-    job_skills_normalized = normalize_skills(job_skills_raw)
+    # Step 5: Normalize skills
     resume_skills_normalized = normalize_skills(resume_skills_raw)
 
-    if not job_skills_normalized:
-        return {"match_score": 0, "details": "No required skills found in the job description."}
+    # Step 6: Perform Weighted Scoring
+    score_result = calculate_weighted_score(job_skills_raw, resume_skills_normalized)
 
-    # Step 4: Calculate the match
-    matching_skills = job_skills_normalized.intersection(resume_skills_normalized)
-    missing_skills = job_skills_normalized.difference(resume_skills_normalized)
-    
-    match_score = (len(matching_skills) / len(job_skills_normalized)) * 100
+    # Step 7: Generate Learning Roadmap
+    missing_skills_list = [skill['skill'] for skill in score_result['details']['missing_skills']]
+    learning_roadmap = generate_learning_roadmap(missing_skills_list, resume_skills_normalized)
 
-    # Step 5: Return a rich, informative response
+    # Step 8: Return the final response
     return {
-        "match_percentage": round(match_score, 2),
-        "summary": f"The candidate's skills match {round(match_score, 2)}% of the job requirements.",
-        "matching_skills": sorted(list(matching_skills)),
-        "missing_skills_from_job": sorted(list(missing_skills)),
-        "total_skills_in_resume": len(resume_skills_normalized),
-        "total_skills_in_job": len(job_skills_normalized)
+        "match_analysis": score_result,
+        "learning_roadmap": learning_roadmap
     }
