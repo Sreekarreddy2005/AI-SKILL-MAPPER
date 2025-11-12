@@ -105,11 +105,9 @@ To run this project locally, follow these steps for both the backend and fronten
     * Analyze the **Skill Gap Matrix** (Matching vs. Missing).
     * Follow the **AI-Generated Roadmap**, clicking on recommended video tutorials to close your skill gaps immediately.
 
-## 👤 Author
+## 👤 Authors
 
 **Sreekar Reddy Pindi**
-*NLP & Backend API Developer | AI Researcher*
+**Suhas Bajjuri**
+**Tushar Reddy C**
 
-## ⚠️ Disclaimer
-
-This project is an educational tool demonstrating the application of AI and NLP in Recruitment Technology (RecTech). The predictions and scores are algorithmic estimates and should be used for guidance purposes only.
