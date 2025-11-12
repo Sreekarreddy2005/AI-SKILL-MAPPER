@@ -107,7 +107,9 @@ To run this project locally, follow these steps for both the backend and fronten
 
 ## 👤 Authors
 
-**Sreekar Reddy Pindi**
-**Suhas Bajjuri**
-**Tushar Reddy C**
+1. **Sreekar Reddy Pindi**
+2. **Suhas Bajjuri**
+3. **Tushar Reddy C**
+
+
 
