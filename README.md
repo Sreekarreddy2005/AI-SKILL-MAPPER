@@ -1,48 +1,115 @@
-# AI Skill Mapper
-An intelligent backend system that uses Natural Language Processing (NLP) to parse, understand, and analyze the match between job descriptions and candidate resumes.
+# 🗺️ AI Skill Mapper: Intelligent Career Pathing System
 
-# Overview
-The AI Skill Mapper is a unified API designed to automate the initial stages of the recruitment pipeline. It ingests unstructured text from job postings and resume files (.pdf, .docx), extracts key information, and provides an objective match analysis based on required skills. This saves recruiters time, reduces manual effort, and helps identify qualified candidates more efficiently.
+![Python](https://img.shields.io/badge/AI%20Engine-Python%203.10-blue)
+![React](https://img.shields.io/badge/Frontend-React%2018-cyan)
+![FastAPI](https://img.shields.io/badge/Backend-FastAPI-green)
+![Status](https://img.shields.io/badge/Status-Active-success)
 
-# Key Features
- Job Description Parsing: Extracts required skills, experience, and education from job postings.
+**AI Skill Mapper** is an end-to-end intelligent system designed to revolutionize how candidates approach career growth. By integrating **Natural Language Processing (NLP)** with **Machine Learning (ML)** algorithms, this application performs deep semantic analysis of resumes against job descriptions to predict success probabilities, identify critical skill gaps, and generate algorithmic learning roadmaps.
 
-Multi-Format Resume Parsing: Processes .pdf and .docx files to extract candidate details, contact information, and listed skills.
+## 📜 Project Overview
 
-Intelligent Skill Normalization: A core engine that understands variations of skills (e.g., "React.js", "ReactJS") and maps them to a standardized name for accurate comparison.
+In the evolving landscape of recruitment, simple keyword matching is no longer sufficient. This project implements a **Full-Stack Intelligent System** that acts as a personalized AI career coach.
 
-Automated Match Analysis: A dedicated API endpoint that calculates a percentage match score between a job's requirements and a candidate's skills, providing a detailed breakdown of matching and missing skills.
+Unlike traditional parsers, AI Skill Mapper utilizes a multi-stage intelligence pipeline:
+1.  **NLP Foundation:** Extracts and normalizes entities from unstructured data (PDF/DOCX resumes) to understand a candidate's true profile.
+2.  **Predictive ML Layer:** Applies a **Weighted Success Scoring algorithm** to evaluate candidate fit based on the semantic importance of specific technical and soft skills.
+3.  **Algorithmic Pathing:** Uses topological sorting and dependency graphs to construct a logical, step-by-step learning roadmap (e.g., enforcing "Python" $\rightarrow$ "Machine Learning").
+4.  **Dynamic Resource Allocation:** Interacts with the **YouTube Data API** to fetch real-time, high-relevance tutorial content for identified skill gaps.
 
-# Technology Stack
+## ✨ Key Features
 
-Backend Framework: FastAPI
+* **🧠 AI-Driven Profile Analysis:** Deep extraction of skills and metadata from resumes using custom NLP pipelines (`spaCy`).
+* **⚖️ Weighted ML Scoring:** A sophisticated scoring engine that assigns dynamic weights to skills based on their relevance (Technical vs. Soft), providing a precise "Fit Score" rather than a simple keyword count.
+* **📉 Intelligent Gap Detection:** Automatically identifies missing critical competencies by comparing the user's normalized skill vector against the job requirements.
+* **🛣️ Dependency-Aware Roadmap:** Generates a logical learning path. The system understands skill hierarchies, ensuring prerequisites are mastered before advanced topics.
+* **🎥 Real-Time Content Aggregation:** A hybrid recommendation engine that fetches curated resources and live video tutorials via the **YouTube Data API v3**.
+* **💻 Interactive Dashboard:** A responsive React.js interface that visualizes data analytics and learning paths in real-time.
 
-NLP Library: spaCy
+## 💻 Tech Stack
 
-File Processing: PyMuPDF (for PDFs), python-docx (for Word documents)
+* **AI & Backend:** Python, FastAPI, spaCy (NLP), Weighted Scoring Algorithms
+* **Frontend:** React.js, CSS3, Axios
+* **Data Processing:** PyMuPDF, python-docx, NumPy
+* **External APIs:** Google/YouTube Data API v3
 
-Server: Uvicorn
+## 🚀 Setup and Installation
 
-Data Handling: Pydantic
+To run this project locally, follow these steps for both the backend and frontend.
 
-# Setup:-
-1) Clone the repo
-2) Activate venv:- python -m venv venv
-.\venv\Scripts\activate
-3) Run this command to install neccessary libraries:- pip install -r requirements.txt and 
-python -m spacy download en_core_web_sm
-4) On your active venv platform install another library:- pip install python-multipart
-5) Install the requirements:- pip install -r requirements.txt
-6) Run the main.py in termnial using :- uvicorn main:app --reload
+### 1. Backend Setup (Python)
 
-# TESTING:- 
-1) After starting the server go to http://127.0.0.1:8000/docs
-2) Click on analyze-job section and expalnd it and click on Try it out and eneter sample text eg:- {
-  "text": "We are seeking a full-stack engineer with solid experience in Python and creating REST APIs. Cloud skills in Amazon Web Services (AWS) are a must. The candidate should be proficient with Docker for containerization and have frontend experience with React."} and click on execute button and you will get ooutput 200 (Success)
-3) Click on parse-resume section and expalnd it and click on Try it out and upload your resume pdf
-4) Click on analyze-match section and expalnd it and click on Try it out and enter sample text:- {
-  "job_description_text": "We are seeking a full-stack engineer with solid experience in Python and creating REST APIs. Cloud skills in Amazon Web Services (AWS) are a must. The candidate should be proficient with Docker for containerization and have frontend experience with React.",
-  "resume_file_content_as_text": "A skilled software developer with a strong background in Python and building RESTful services. Experienced in cloud deployment using AWS and containerizing applications with Docker. Previously worked on backend systems."
-} and then u will see output with match percentage
+1.  **Clone the repository:**
+    ```bash
+    git clone [https://github.com/Sreekarreddy2005/AI-Skill-Mapper.git](https://github.com/Sreekarreddy2005/AI-Skill-Mapper.git)
+    cd AI-Skill-Mapper
+    ```
 
-   
+2.  **Create and activate a virtual environment:**
+    ```bash
+    python -m venv venv
+    # Windows:
+    venv\Scripts\activate
+    # Mac/Linux:
+    source venv/bin/activate
+    ```
+
+3.  **Install dependencies:**
+    ```bash
+    pip install fastapi uvicorn spacy python-docx pymupdf google-api-python-client python-multipart requests
+    ```
+
+4.  **Download the NLP Model:**
+    ```bash
+    python -m spacy download en_core_web_sm
+    ```
+
+5.  **Configure API Key:**
+    Open `intelligence/resource_finder.py` and add your **YouTube Data API Key**:
+    ```python
+    YOUTUBE_API_KEY = "YOUR_API_KEY_HERE"
+    ```
+
+6.  **Run the Server:**
+    ```bash
+    uvicorn main:app --reload
+    ```
+    The intelligent backend will start at `http://127.0.0.1:8000`.
+
+### 2. Frontend Setup (React)
+
+1.  **Navigate to the frontend directory:**
+    (Open a new terminal window)
+    ```bash
+    cd frontend
+    ```
+
+2.  **Install Node modules:**
+    ```bash
+    npm install axios react react-dom react-scripts
+    ```
+
+3.  **Start the Application:**
+    ```bash
+    npm start
+    ```
+    The user interface will launch at `http://localhost:3000`.
+
+## 🖥️ Usage Flow
+
+1.  **Job Analysis:** Paste the full text of a Job Description (JD) into the analysis field.
+2.  **Profile Ingestion:** Upload your resume in `.pdf` or `.docx` format.
+3.  **AI Computation:** Click **"Analyze Now."** The system processes the text, normalizes skills, and calculates the weighted score.
+4.  **Results & Action Plan:**
+    * View the computed **Match Percentage**.
+    * Analyze the **Skill Gap Matrix** (Matching vs. Missing).
+    * Follow the **AI-Generated Roadmap**, clicking on recommended video tutorials to close your skill gaps immediately.
+
+## 👤 Author
+
+**Sreekar Reddy Pindi**
+*NLP & Backend API Developer | AI Researcher*
+
+## ⚠️ Disclaimer
+
+This project is an educational tool demonstrating the application of AI and NLP in Recruitment Technology (RecTech). The predictions and scores are algorithmic estimates and should be used for guidance purposes only.
