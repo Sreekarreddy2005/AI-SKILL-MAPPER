@@ -4,7 +4,7 @@ from googleapiclient.errors import HttpError
 
 # --- Configuration ---
 # Your YouTube API Key is correctly placed here.
-YOUTUBE_API_KEY = "AIzaSyDbQNchkCu0_K3SsR6b9W8LOkC-vJEfo-U"
+YOUTUBE_API_KEY = "YOUR_API_KEY" 
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
 
@@ -53,3 +53,4 @@ def find_youtube_resources(skill_name: str, max_results: int = 3) -> list:
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
         return []
+
